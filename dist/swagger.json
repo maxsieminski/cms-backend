@@ -1,0 +1,824 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "CMS",
+        "description": "API for CMS management",
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "tags": [
+        {
+            "name": "Paragraphs",
+            "description": "API for paragraphs in the system"
+        },
+        {
+            "name": "Components",
+            "description": "API for components in the system"
+        },
+        {
+            "name": "Sections",
+            "description": "API for sections in the system"
+        },
+        {
+            "name": "Pages",
+            "description": "API for pages in the system"
+        }
+    ],
+    "paths": {
+        "/paragraphs": {
+            "get": {
+                "tags": [
+                    "Paragraphs"
+                ],
+                "summary": "Get all paragraphs in system",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Paragraphs"
+                ],
+                "summary": "Create a new paragraph",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                },
+                "requestBody": {
+                    "description": "Paragraph object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/Paragraph"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/paragraphs/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "ID of the paragraph that we want to match",
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Paragraphs"
+                ],
+                "summary": "Get a paragraph",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Paragraphs"
+                ],
+                "summary": "Patch a paragraph",
+                "requestBody": {
+                    "description": "Paragraph object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/Paragraph"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Paragraphs"
+                ],
+                "summary": "Delete a paragraph",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/components": {
+            "get": {
+                "tags": [
+                    "Components"
+                ],
+                "summary": "Get all components in system",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Components"
+                ],
+                "summary": "Create a new component",
+                "requestBody": {
+                    "description": "Component object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/Component"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/components/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "ID of the component that we want to match",
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "get": {
+                "parameters": [
+                    {
+                        "name": "includeParagraphs",
+                        "in": "query",
+                        "description": "ID of the component that we want to match",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Components"
+                ],
+                "summary": "Get a component",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Components"
+                ],
+                "summary": "Patch a component",
+                "requestBody": {
+                    "description": "Component object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/Component"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "delete": {
+                "parameters": [
+                    {
+                        "name": "includeParagraphs",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the component that we want to match",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Components"
+                ],
+                "summary": "Delete a component",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/components/categories": {
+            "get": {
+                "tags": [
+                    "Components"
+                ],
+                "summary": "Get all component categories in system",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Components"
+                ],
+                "summary": "Create a new component category",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "requestBody": {
+                    "description": "Component Category object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/ComponentCategory"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/components/categories/{id}": {
+            "get": {
+                "tags": [
+                    "Components"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the component that we want to match",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "summary": "Get a component category",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Components"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the component that we want to match",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "summary": "Updates component category",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "requestBody": {
+                    "description": "Component Category object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/ComponentCategory"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Components"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the component that we want to match",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "summary": "Deletes a component category",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/sections": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "includeComponents",
+                        "in": "query",
+                        "description": "Include components in sections",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "includeParagraphs",
+                        "in": "query",
+                        "description": "Include components in components",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Sections"
+                ],
+                "summary": "Get all sections in system",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Sections"
+                ],
+                "summary": "Create a new section",
+                "requestBody": {
+                    "description": "Section object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/Section"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/sections/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "ID of the section that we want to match",
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "includeComponents",
+                    "in": "query",
+                    "description": "Include components in sections",
+                    "schema": {
+                        "type": "boolean"
+                    }
+                },
+                {
+                    "name": "includeParagraphs",
+                    "in": "query",
+                    "description": "Include components in components",
+                    "schema": {
+                        "type": "boolean"
+                    }
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Sections"
+                ],
+                "summary": "Get a section",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Sections"
+                ],
+                "summary": "Patch a section",
+                "requestBody": {
+                    "description": "Section object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/Section"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Sections"
+                ],
+                "summary": "Delete a section",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/pages": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "includeSections",
+                        "in": "query",
+                        "description": "Include sections in page",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "includeComponents",
+                        "in": "query",
+                        "description": "Include components in sections",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "includeParagraphs",
+                        "in": "query",
+                        "description": "Include components in components",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "tags": [
+                    "Pages"
+                ],
+                "summary": "Get all pages in system",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Pages"
+                ],
+                "summary": "Create a new page",
+                "requestBody": {
+                    "description": "Page object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/Page"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/pages/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "ID of the page that we want to match",
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "name": "includeSections",
+                    "in": "query",
+                    "description": "Include sections in page",
+                    "schema": {
+                        "type": "boolean"
+                    }
+                },
+                {
+                    "name": "includeComponents",
+                    "in": "query",
+                    "description": "Include components in sections",
+                    "schema": {
+                        "type": "boolean"
+                    }
+                },
+                {
+                    "name": "includeParagraphs",
+                    "in": "query",
+                    "description": "Include components in components",
+                    "schema": {
+                        "type": "boolean"
+                    }
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Pages"
+                ],
+                "summary": "Get a page",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Pages"
+                ],
+                "summary": "Patch a page",
+                "requestBody": {
+                    "description": "Page object",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/Page"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Pages"
+                ],
+                "summary": "Delete a page",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "id": {
+            "properties": {
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "Paragraph": {
+            "type": "object",
+            "properties": {
+                "component_id": {
+                    "type": "number"
+                },
+                "position": {
+                    "type": "number"
+                },
+                "header": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "href": {
+                    "type": "string"
+                },
+                "href_text": {
+                    "type": "string"
+                }
+            }
+        },
+        "Component": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "header": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "href": {
+                    "type": "string"
+                },
+                "href_text": {
+                    "type": "string"
+                }
+            }
+        },
+        "ComponentCategory": {
+            "type": "object",
+            "properties": {
+                "category_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "Section": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "string"
+                },
+                "position": {
+                    "type": "number"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "changed_date": {
+                    "type": "Date"
+                }
+            }
+        },
+        "Page": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "changed_date": {
+                    "type": "date"
+                },
+                "author": {
+                    "type": "number"
+                }
+            }
+        }
+    }
+}
