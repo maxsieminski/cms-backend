@@ -6,7 +6,8 @@
   "scripts": {
     "test": "test",
     "build": "tsc",
-    "start": "npm run build && node dist/server.js",
+    "heroku-postbuild": "npm run build",
+    "start": "node dist/server.js",
     "watch": "nodemon dist/server.js"
   },
   "author": "Max Sieminski",
