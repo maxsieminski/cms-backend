@@ -18,6 +18,9 @@ export class MySqlHandler {
                 host: cms_defs.MYSQL_HOST,
                 port: cms_defs.MYSQL_PORT,
                 user: cms_defs.MYSQL_ROOT_USERNAME,
+                ssl: {
+                    ca: cms_defs.MYSQL_ROOT_CA
+                },
                 password: cms_defs.MYSQL_ROOT_PASSWORD,
                 database: cms_defs.MYSQL_DB_NAME
             });
