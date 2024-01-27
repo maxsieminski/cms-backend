@@ -2,6 +2,7 @@ import mysql, { RowDataPacket } from 'mysql2/promise';
 import { cms_defs } from '../defs';
 import { cms_types } from '../types';
 import { mysql_utils } from './utils';
+import { ConnectionOptions } from 'mysql2/typings/mysql/lib/Connection';
 
 
 export class MySqlHandler {
@@ -14,17 +15,21 @@ export class MySqlHandler {
 
     public static async getInstance(): Promise<MySqlHandler> {
         if (!MySqlHandler.instance) {
-            const dbConnection = await mysql.createConnection({
+            const connectionParams: ConnectionOptions = {
                 host: cms_defs.MYSQL_HOST,
                 port: cms_defs.MYSQL_PORT,
                 user: cms_defs.MYSQL_ROOT_USERNAME,
-                ssl: {
-                    ca: cms_defs.MYSQL_ROOT_CA
-                },
                 password: cms_defs.MYSQL_ROOT_PASSWORD,
                 database: cms_defs.MYSQL_DB_NAME
-            });
+            }
 
+            const ca = cms_defs.MYSQL_ROOT_CA;
+            
+            if (ca) {
+                connectionParams['ssl'] = { ca }
+            }
+
+            const dbConnection = await mysql.createConnection(connectionParams);
             MySqlHandler.instance = new MySqlHandler(dbConnection);
         }
         return MySqlHandler.instance;

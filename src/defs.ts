@@ -5,6 +5,7 @@ export module cms_defs {
     export const MYSQL_ROOT_USERNAME = process.env["MYSQL_ROOT_USERNAME"] ?? "root";
     export const MYSQL_ROOT_PASSWORD = process.env["MYSQL_ROOT_PASSWORD"] ?? "spdspd12";
     export const MYSQL_ROOT_CA = process.env["MYSQL_ROOT_CA"] ?? "";
+    export const SECRET = process.env["PRIVATE_KEY"] ?? "U2FsdGVkX19rxhjRXLdlILfM//IpugBVk5BO2Oqd/DU="
 }
 
 export module cms_exceptions {

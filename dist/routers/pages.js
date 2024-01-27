@@ -25,13 +25,38 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = __importStar(require("express"));
 const bodyParser = __importStar(require("body-parser"));
+const jwt = __importStar(require("jsonwebtoken"));
 const pages_1 = require("../controllers/pages");
+const defs_1 = require("../defs");
+const user_1 = require("../controllers/user");
 const parser = bodyParser.json();
 const pagesRouter = express.Router();
 async function controllerMiddleware(req, res, next) {
     console.log(`${req.method} /pages${req.path}`);
-    res.locals.controller = await pages_1.PagesController.getInstance();
-    next();
+    try {
+        if (req.method !== 'GET') {
+            if ('authorization' in req.headers === false || req.headers.authorization.split(' ').length < 2) {
+                return res.status(401).send();
+            }
+            if ('authorization' in req.headers && req.headers.authorization.split(' ').length > 1) {
+                const token = req.headers.authorization.split(' ')[1] ?? '';
+                const decoded = jwt.verify(token, defs_1.cms_defs.SECRET);
+                if (typeof decoded === 'string') {
+                    return res.status(401).send();
+                }
+                const usersController = await user_1.UsersController.getInstance();
+                const user = await usersController.get({ id: decoded.data.id });
+                if (!user.id) {
+                    return res.status(401).send();
+                }
+            }
+        }
+        res.locals.controller = await pages_1.PagesController.getInstance();
+        return next();
+    }
+    catch (err) {
+        return res.status(401).send();
+    }
 }
 pagesRouter.use(controllerMiddleware);
 pagesRouter.get('/', async (req, res) => {
@@ -46,15 +71,15 @@ pagesRouter.post('/', parser, async (req, res) => {
     const controller = res.locals.controller;
     const body = req.body;
     if (!body) {
-        res.status(400).send("Body must be provided");
+        return res.status(400).send("Body must be provided");
     }
     try {
         await controller.post(body);
         const response = await controller.getLatest();
-        res.status(201).send(response);
+        return res.status(201).send(response);
     }
     catch (err) {
-        res.status(500).send(err);
+        return res.status(500).send(err);
     }
 });
 pagesRouter.get('/:pageId', async (req, res) => {
@@ -64,7 +89,7 @@ pagesRouter.get('/:pageId', async (req, res) => {
         const pagePath = req.params.pageId;
         const response = await controller.get({ path: `/${pagePath}` }, true, true, true);
         if (!response) {
-            res.status(404).send("Not found");
+            return res.status(404).send("Not found");
         }
         res.send(response);
     }
@@ -74,7 +99,7 @@ pagesRouter.get('/:pageId', async (req, res) => {
         const includeParagraphs = req.query.includeParagraphs === "true";
         const response = await controller.get({ id: pageId }, includeSections, includeComponents, includeParagraphs);
         if (!response) {
-            res.status(404).send("Not found");
+            return res.status(404).send("Not found");
         }
         res.send(response);
     }
@@ -84,7 +109,7 @@ pagesRouter.get('/:pageId/sections', async (req, res) => {
     const pageId = Number.parseInt(req.params.pageId);
     const response = await controller.get({ id: pageId }, true, false, false);
     if (!response) {
-        res.status(404).send("Not found");
+        return res.status(404).send("Not found");
     }
     if (Array.isArray(response)) {
         res.send(response[0].sections);
@@ -101,13 +126,13 @@ pagesRouter.patch('/:pageId', parser, async (req, res) => {
         res.send(response);
     }
     catch (err) {
-        res.status(500).send(err);
+        return res.status(500).send(err);
     }
 });
 pagesRouter.delete('/:pageId', async (req, res) => {
     const controller = res.locals.controller;
     const pageId = Number.parseInt(req.params.pageId);
     await controller.delete({ id: pageId });
-    res.status(200).send();
+    return res.status(200).send();
 });
 exports.default = pagesRouter;

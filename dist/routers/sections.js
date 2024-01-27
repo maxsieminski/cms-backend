@@ -25,13 +25,38 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = __importStar(require("express"));
 const bodyParser = __importStar(require("body-parser"));
+const jwt = __importStar(require("jsonwebtoken"));
 const sections_1 = require("../controllers/sections");
+const defs_1 = require("../defs");
+const user_1 = require("../controllers/user");
 const parser = bodyParser.json();
 const sectionsRouter = express.Router();
 async function controllerMiddleware(req, res, next) {
     console.log(`${req.method} /sections${req.path}`);
-    res.locals.controller = await sections_1.SectionsController.getInstance();
-    next();
+    try {
+        if (req.method !== 'GET') {
+            if ('authorization' in req.headers === false || req.headers.authorization.split(' ').length < 2) {
+                return res.status(401).send();
+            }
+            if ('authorization' in req.headers && req.headers.authorization.split(' ').length > 1) {
+                const token = req.headers.authorization.split(' ')[1] ?? '';
+                const decoded = jwt.verify(token, defs_1.cms_defs.SECRET);
+                if (typeof decoded === 'string') {
+                    return res.status(401).send();
+                }
+                const usersController = await user_1.UsersController.getInstance();
+                const user = await usersController.get({ id: decoded.data.id });
+                if (!user.id) {
+                    return res.status(401).send();
+                }
+            }
+        }
+        res.locals.controller = await sections_1.SectionsController.getInstance();
+        return next();
+    }
+    catch (err) {
+        return res.status(401).send();
+    }
 }
 sectionsRouter.use(controllerMiddleware);
 sectionsRouter.get('/', async (req, res) => {
@@ -45,17 +70,17 @@ sectionsRouter.post('/', parser, async (req, res) => {
     const controller = res.locals.controller;
     const body = req.body;
     if (!body) {
-        res.status(400).send("Body must be provided");
+        return res.status(400).send("Body must be provided");
     }
     const { pageId, ...data } = body;
     try {
         await controller.post(data);
         const response = await controller.getLatest();
         await controller.createPageLink(response.id, pageId);
-        res.status(201).send(response);
+        return res.status(201).send(response);
     }
     catch (err) {
-        res.status(500).send(err);
+        return res.status(500).send(err);
     }
 });
 sectionsRouter.get('/:sectionId', async (req, res) => {
@@ -65,7 +90,7 @@ sectionsRouter.get('/:sectionId', async (req, res) => {
     const includeParagraphs = req.query.includeParagraphs === "true";
     const response = await controller.get({ id: sectionId }, includeComponents, includeParagraphs);
     if (!response) {
-        res.status(404).send("Not found");
+        return res.status(404).send("Not found");
     }
     res.send(response);
 });
@@ -74,7 +99,7 @@ sectionsRouter.get('/:sectionId/components', async (req, res) => {
     const sectionId = Number.parseInt(req.params.sectionId);
     const response = await controller.get({ id: sectionId }, true, false);
     if (!response) {
-        res.status(404).send("Not found");
+        return res.status(404).send("Not found");
     }
     if (Array.isArray(response)) {
         res.send(response[0].components);
@@ -91,7 +116,7 @@ sectionsRouter.patch('/:sectionId', parser, async (req, res) => {
         res.send(response);
     }
     catch (err) {
-        res.status(500).send(err);
+        return res.status(500).send(err);
     }
 });
 sectionsRouter.delete('/:sectionId', async (req, res) => {
@@ -99,10 +124,10 @@ sectionsRouter.delete('/:sectionId', async (req, res) => {
     const sectionId = Number.parseInt(req.params.sectionId);
     try {
         await controller.delete({ id: sectionId });
-        res.status(200).send();
+        return res.status(200).send();
     }
     catch (err) {
-        res.status(400).send();
+        return res.status(400).send();
     }
 });
 exports.default = sectionsRouter;

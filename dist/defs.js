@@ -8,6 +8,8 @@ var cms_defs;
     cms_defs.MYSQL_PORT = Number.parseInt(process.env["MYSQL_PORT"] ?? "3306");
     cms_defs.MYSQL_ROOT_USERNAME = process.env["MYSQL_ROOT_USERNAME"] ?? "root";
     cms_defs.MYSQL_ROOT_PASSWORD = process.env["MYSQL_ROOT_PASSWORD"] ?? "spdspd12";
+    cms_defs.MYSQL_ROOT_CA = process.env["MYSQL_ROOT_CA"] ?? "";
+    cms_defs.SECRET = process.env["PRIVATE_KEY"] ?? "U2FsdGVkX19rxhjRXLdlILfM//IpugBVk5BO2Oqd/DU=";
 })(cms_defs || (exports.cms_defs = cms_defs = {}));
 var cms_exceptions;
 (function (cms_exceptions) {

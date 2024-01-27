@@ -9,6 +9,7 @@ import componentsRouter from "./routers/components";
 import sectionsRouter from "./routers/sections";
 import inquriesRouter from "./routers/inquries";
 import pagesRouter from "./routers/pages";
+import userRouter from "./routers/user";
 
 
 
@@ -24,7 +25,8 @@ export default async function main() {
     app.use('/components', componentsRouter);
     app.use('/sections', sectionsRouter);
     app.use('/pages', pagesRouter);
-    app.use('/inquries', inquriesRouter)
+    app.use('/inquries', inquriesRouter);
+    app.use('/users', userRouter);
     app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerJson));
         
     app.listen(port, () => {

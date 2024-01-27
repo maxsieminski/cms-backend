@@ -79,5 +79,12 @@ export module cms_types {
             category: string;
             content: string;
         };
+
+        export interface UserObject extends ModelCommonObject {
+            email?: string;
+            password?: string;
+            name?: string;
+            position?: 'Admin' | 'Employee' | 'Trainee';            
+        }
     }
 }

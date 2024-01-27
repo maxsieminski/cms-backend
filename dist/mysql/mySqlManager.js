@@ -13,13 +13,18 @@ class MySqlHandler {
     }
     static async getInstance() {
         if (!MySqlHandler.instance) {
-            const dbConnection = await promise_1.default.createConnection({
+            const connectionParams = {
                 host: defs_1.cms_defs.MYSQL_HOST,
                 port: defs_1.cms_defs.MYSQL_PORT,
                 user: defs_1.cms_defs.MYSQL_ROOT_USERNAME,
                 password: defs_1.cms_defs.MYSQL_ROOT_PASSWORD,
                 database: defs_1.cms_defs.MYSQL_DB_NAME
-            });
+            };
+            const ca = defs_1.cms_defs.MYSQL_ROOT_CA;
+            if (ca) {
+                connectionParams['ssl'] = { ca };
+            }
+            const dbConnection = await promise_1.default.createConnection(connectionParams);
             MySqlHandler.instance = new MySqlHandler(dbConnection);
         }
         return MySqlHandler.instance;

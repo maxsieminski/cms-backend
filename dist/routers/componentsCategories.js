@@ -25,11 +25,31 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = __importStar(require("express"));
 const bodyParser = __importStar(require("body-parser"));
+const jwt = __importStar(require("jsonwebtoken"));
 const componentsCategories_1 = require("../controllers/componentsCategories");
+const defs_1 = require("../defs");
+const user_1 = require("../controllers/user");
 const parser = bodyParser.json();
 const componentsCategoriesRouter = express.Router();
 async function controllerMiddleware(req, res, next) {
     console.log(`${req.method} /components/categories${req.path}`);
+    if (req.method !== 'GET') {
+        if ('authorization' in req.headers === false || req.headers.authorization.split(' ').length < 2) {
+            return res.status(401).send();
+        }
+        if ('authorization' in req.headers && req.headers.authorization.split(' ').length > 1) {
+            const token = req.headers.authorization.split(' ')[1] ?? '';
+            const decoded = jwt.verify(token, defs_1.cms_defs.SECRET);
+            if (typeof decoded === 'string') {
+                return res.status(401).send();
+            }
+            const usersController = await user_1.UsersController.getInstance();
+            const user = await usersController.get({ id: decoded.data.id });
+            if (!user.id) {
+                return res.status(401).send();
+            }
+        }
+    }
     res.locals.controller = await componentsCategories_1.ComponentsCategoriesController.getInstance();
     next();
 }
@@ -43,15 +63,15 @@ componentsCategoriesRouter.post('/', parser, async (req, res) => {
     const controller = res.locals.controller;
     const body = req.body;
     if (!body) {
-        res.status(400).send("Body must be provided");
+        return res.status(400).send("Body must be provided");
     }
     try {
         await controller.post(body);
         const response = await controller.getLatest();
-        res.status(201).send(response);
+        return res.status(201).send(response);
     }
     catch (err) {
-        res.status(500).send(err);
+        return res.status(500).send(err);
     }
 });
 componentsCategoriesRouter.get('/:componentCategoryId', async (req, res) => {
@@ -59,7 +79,7 @@ componentsCategoriesRouter.get('/:componentCategoryId', async (req, res) => {
     const componentCategoryId = Number.parseInt(req.params.componentCategoryId);
     const response = await controller.get({ id: componentCategoryId });
     if (!response) {
-        res.status(404).send("Not found");
+        return res.status(404).send("Not found");
     }
     res.send(response);
 });
@@ -73,14 +93,14 @@ componentsCategoriesRouter.patch('/:componentCategoryId', parser, async (req, re
         res.send(response);
     }
     catch (err) {
-        res.status(500).send(err);
+        return res.status(500).send(err);
     }
 });
 componentsCategoriesRouter.delete('/:componentCategoryId', async (req, res) => {
     const controller = res.locals.controller;
     const componentCategoryId = Number.parseInt(req.params.componentCategoryId);
     await controller.delete({ id: componentCategoryId });
-    res.status(200).send();
+    return res.status(200).send();
 });
 componentsCategoriesRouter.get('/categories', async (req, res) => {
 });

@@ -2,6 +2,8 @@ import { MySqlHandler } from "../mysql/mySqlManager";
 import { cms_types } from "../types";
 import { BaseController } from "./base";
 import { ComponentsController } from "./component";
+import { PagesController } from "./pages";
+import { PageSectionsController } from "./pagesSections";
 import { SectionComponentsController } from "./sectionComponents";
 
 export class SectionsController extends BaseController {

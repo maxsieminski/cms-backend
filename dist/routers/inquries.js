@@ -25,13 +25,38 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = __importStar(require("express"));
 const bodyParser = __importStar(require("body-parser"));
+const jwt = __importStar(require("jsonwebtoken"));
 const inquries_1 = require("../controllers/inquries");
+const defs_1 = require("../defs");
+const user_1 = require("../controllers/user");
 const parser = bodyParser.json();
 const inquriesRouter = express.Router();
 async function controllerMiddleware(req, res, next) {
     console.log(`${req.method} /inquiries${req.path}`);
-    res.locals.controller = await inquries_1.InquriesController.getInstance();
-    next();
+    try {
+        if (req.method !== 'GET') {
+            if ('authorization' in req.headers === false || req.headers.authorization.split(' ').length < 2) {
+                return res.status(401).send();
+            }
+            if ('authorization' in req.headers && req.headers.authorization.split(' ').length > 1) {
+                const token = req.headers.authorization.split(' ')[1] ?? '';
+                const decoded = jwt.verify(token, defs_1.cms_defs.SECRET);
+                if (typeof decoded === 'string') {
+                    return res.status(401).send();
+                }
+                const usersController = await user_1.UsersController.getInstance();
+                const user = await usersController.get({ id: decoded.data.id });
+                if (!user.id) {
+                    return res.status(401).send();
+                }
+            }
+        }
+        res.locals.controller = await inquries_1.InquriesController.getInstance();
+        return next();
+    }
+    catch (err) {
+        return res.status(401).send();
+    }
 }
 inquriesRouter.use(controllerMiddleware);
 inquriesRouter.get('/', async (req, res) => {
@@ -51,15 +76,15 @@ inquriesRouter.post('/', parser, async (req, res) => {
     const controller = res.locals.controller;
     const body = req.body;
     if (!body) {
-        res.status(400).send("Body must be provided");
+        return res.status(400).send("Body must be provided");
     }
     try {
         await controller.post(body);
         const response = await controller.getLatest();
-        res.status(201).send(response);
+        return res.status(201).send(response);
     }
     catch (err) {
-        res.status(500).send(err);
+        return res.status(500).send(err);
     }
 });
 inquriesRouter.get('/:inquryId', async (req, res) => {
@@ -67,7 +92,7 @@ inquriesRouter.get('/:inquryId', async (req, res) => {
     const inquryId = Number.parseInt(req.params.inquryId);
     const response = await controller.get({ id: inquryId });
     if (!response) {
-        res.status(404).send("Not found");
+        return res.status(404).send("Not found");
     }
     res.send(response);
 });
@@ -81,13 +106,13 @@ inquriesRouter.patch('/:inquryId', parser, async (req, res) => {
         res.send(response);
     }
     catch (err) {
-        res.status(500).send(err);
+        return res.status(500).send(err);
     }
 });
 inquriesRouter.delete('/:inquryId', async (req, res) => {
     const controller = res.locals.controller;
     const inquryId = Number.parseInt(req.params.inquryId);
     await controller.delete({ id: inquryId });
-    res.status(200).send();
+    return res.status(200).send();
 });
 exports.default = inquriesRouter;

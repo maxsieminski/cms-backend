@@ -36,6 +36,7 @@ const components_1 = __importDefault(require("./routers/components"));
 const sections_1 = __importDefault(require("./routers/sections"));
 const inquries_1 = __importDefault(require("./routers/inquries"));
 const pages_1 = __importDefault(require("./routers/pages"));
+const user_1 = __importDefault(require("./routers/user"));
 const app = (0, express_1.default)();
 const port = process.env["PORT"] || 3000;
 async function main() {
@@ -46,6 +47,7 @@ async function main() {
     app.use('/sections', sections_1.default);
     app.use('/pages', pages_1.default);
     app.use('/inquries', inquries_1.default);
+    app.use('/users', user_1.default);
     app.use('/docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerJson));
     app.listen(port, () => {
         console.log(`Server is listening on port ${port}`);

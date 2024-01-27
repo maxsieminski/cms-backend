@@ -1,4 +1,5 @@
 import { MySqlHandler } from "../mysql/mySqlManager";
+import { cms_types } from "../types";
 import { BaseController } from "./base";
 
 export class PageSectionsController extends BaseController {
@@ -12,6 +13,11 @@ export class PageSectionsController extends BaseController {
             PageSectionsController._instance = new PageSectionsController(mySqlHandler);
         }
         return PageSectionsController._instance;
+    }
+
+    override async get(filter?: Partial<cms_types.models.PageSectionsObject>): Promise<cms_types.models.ModelCommonObjectAny> {
+        const dbFilter = this._getFilter(filter);
+        return await this._mySqlHandler.get(this._tableName, dbFilter) as unknown as cms_types.models.ModelCommonObjectAny;
     }
 
     private constructor (mySqlHandler: MySqlHandler) {
