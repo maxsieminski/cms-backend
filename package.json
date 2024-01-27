@@ -7,7 +7,7 @@
     "test": "test",
     "build": "tsc",
     "heroku-postbuild": "npm run build",
-    "start": "npm run build && node dist/server.js",
+    "start": "node dist/server.js",
     "watch": "nodemon dist/server.js"
   },
   "author": "Max Sieminski",
