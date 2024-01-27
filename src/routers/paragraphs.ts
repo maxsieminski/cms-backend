@@ -36,7 +36,7 @@ async function controllerMiddleware(req: any, res: any, next: any) {
         res.locals.controller = await ParagraphsController.getInstance();
         return next();
     } catch (err) {
-        return res.status(401).send();
+        return res.status(401).send(err);
     }
 }
 

@@ -20,6 +20,9 @@ class SectionsController extends base_1.BaseController {
     async get(filter, includeComponents, includeParagraphs) {
         const dbFilter = this._getFilter(filter);
         const section = await this._mySqlHandler.get(this._tableName, dbFilter);
+        const isValidSectionObject = (obj) => {
+            return obj !== undefined && obj !== null;
+        };
         const getSectionWithComponents = async (section) => {
             const componentController = await component_1.ComponentsController.getInstance();
             const sectionComponentsController = await sectionComponents_1.SectionComponentsController.getInstance();
@@ -43,13 +46,16 @@ class SectionsController extends base_1.BaseController {
         };
         if (includeComponents) {
             if (Array.isArray(section)) {
-                return await Promise.all(section.map(async (entry) => {
+                const validSections = section.filter(isValidSectionObject);
+                return await Promise.all(validSections.map(async (entry) => {
                     return await getSectionWithComponents(entry);
                 }));
             }
-            return await getSectionWithComponents(section);
+            if (isValidSectionObject(section)) {
+                return await getSectionWithComponents(section);
+            }
         }
-        return section;
+        return isValidSectionObject(section) ? section : [];
     }
     createPageLink(section_id, page_id) {
         return this._mySqlHandler.create('pages_sections', { section_id, page_id });

@@ -129,7 +129,7 @@ sectionsRouter.delete('/:sectionId', async (req, res) => {
         await controller.delete( { id: sectionId } );
         return res.status(200).send();
     } catch (err) {
-        return res.status(400).send();
+        return res.status(400).send(err);
     }
 });
 

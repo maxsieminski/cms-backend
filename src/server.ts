@@ -10,6 +10,7 @@ import sectionsRouter from "./routers/sections";
 import inquriesRouter from "./routers/inquries";
 import pagesRouter from "./routers/pages";
 import userRouter from "./routers/user";
+import configRouter from "./routers/config";
 
 
 
@@ -27,6 +28,7 @@ export default async function main() {
     app.use('/pages', pagesRouter);
     app.use('/inquries', inquriesRouter);
     app.use('/users', userRouter);
+    app.use('/config', configRouter);
     app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerJson));
         
     app.listen(port, () => {

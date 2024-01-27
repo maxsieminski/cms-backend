@@ -65,7 +65,7 @@ inquriesRouter.get('/', async (req, res) => {
     if (!response) {
         res.send([]);
     }
-    if (!Array.isArray(response)) {
+    else if (!Array.isArray(response)) {
         res.send([response]);
     }
     else {

@@ -2,8 +2,6 @@ import { MySqlHandler } from "../mysql/mySqlManager";
 import { cms_types } from "../types";
 import { BaseController } from "./base";
 import { ComponentsController } from "./component";
-import { PagesController } from "./pages";
-import { PageSectionsController } from "./pagesSections";
 import { SectionComponentsController } from "./sectionComponents";
 
 export class SectionsController extends BaseController {
@@ -26,6 +24,10 @@ export class SectionsController extends BaseController {
     override async get(filter?: Partial<cms_types.models.SectionObject>, includeComponents?: boolean, includeParagraphs?: boolean): Promise<cms_types.models.SectionObjectAny> {
         const dbFilter = this._getFilter(filter);
         const section = await this._mySqlHandler.get(this._tableName, dbFilter) as unknown as cms_types.models.SectionObjectAny;
+
+        const isValidSectionObject = (obj: any): obj is cms_types.models.SectionObject => {
+            return obj !== undefined && obj !== null;
+        };
 
         const getSectionWithComponents = async (section: cms_types.models.SectionObject) => {
             const componentController = await ComponentsController.getInstance();
@@ -55,14 +57,18 @@ export class SectionsController extends BaseController {
 
         if (includeComponents) {
             if (Array.isArray(section)) {
-                return await Promise.all(section.map(async (entry) => {
+                const validSections = section.filter(isValidSectionObject);
+
+                return await Promise.all(validSections.map(async (entry) => {
                     return await getSectionWithComponents(entry);
                 }));
             }
-            return await getSectionWithComponents(section);    
+            if (isValidSectionObject(section)) {
+                return await getSectionWithComponents(section);    
+            }
         }
 
-        return section;
+        return isValidSectionObject(section) ? section : [];
     }
 
     public createPageLink(section_id: number, page_id: number) {

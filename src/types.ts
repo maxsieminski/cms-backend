@@ -86,5 +86,14 @@ export module cms_types {
             name?: string;
             position?: 'Admin' | 'Employee' | 'Trainee';            
         }
+
+        export interface ConfigObject extends ModelCommonObject {
+            title: string;
+            email: string;
+            phone: string;
+            address: string;
+            description: string;
+            highlight_text: string;
+        }
     }
 }
