@@ -13,23 +13,25 @@ const configRouter = express.Router();
 async function controllerMiddleware(req: any, res: any, next: any) {
     console.log(`${req.method} /config${req.path}`);
     try {
-        if ('authorization' in req.headers === false || req.headers.authorization.split(' ').length < 2 ) {
-            return res.status(401).send();
-        }
-        if ('authorization' in req.headers && req.headers.authorization.split(' ').length > 1) {
-            const token = req.headers.authorization.split(' ')[1] ?? '';
-            
-            const decoded = jwt.verify(token, cms_defs.SECRET);
-
-            if (typeof decoded === 'string') {
+        if (req.method !== 'GET') {
+            if ('authorization' in req.headers === false || req.headers.authorization.split(' ').length < 2 ) {
                 return res.status(401).send();
             }
+            if ('authorization' in req.headers && req.headers.authorization.split(' ').length > 1) {
+                const token = req.headers.authorization.split(' ')[1] ?? '';
+                
+                const decoded = jwt.verify(token, cms_defs.SECRET);
 
-            const usersController = await UsersController.getInstance();
-            const user = await usersController.get({ id: decoded.data.id }) as cms_types.models.ModelCommonObject;
+                if (typeof decoded === 'string') {
+                    return res.status(401).send();
+                }
 
-            if (!user.id) {
-                return res.status(401).send();
+                const usersController = await UsersController.getInstance();
+                const user = await usersController.get({ id: decoded.data.id }) as cms_types.models.ModelCommonObject;
+
+                if (!user.id) {
+                    return res.status(401).send();
+                }
             }
         }
         res.locals.controller = await ConfigController.getInstance();
